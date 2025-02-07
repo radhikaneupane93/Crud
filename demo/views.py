@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from rest_framework.views import APIView
 from .models import User
 from .serializers import UserSerializer,UpdateSerializer,DeleteSerializer,LoginSerializer
@@ -101,9 +101,8 @@ class LoginViewSet(viewsets.ViewSet):
         
         
 
-
-
-
+def form(request):
+    return render(request, "index.html")
 
 
 

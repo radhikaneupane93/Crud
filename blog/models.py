@@ -25,12 +25,9 @@ class BlogComment(models.Model):
     
 class BlogLike(models.Model):
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name="likes")
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    likes = models.ManyToManyField(User, related_name="user_post")
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        unique_together=('blog','user')
-        
+
     def __str__(self):
-        return f'Liked by {self.user.email} on {self.blog.blog_title}'
+        return f'Liked by {self.likes.count()} users on {self.blog.blog_title}'
     

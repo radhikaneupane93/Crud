@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function toggleForm(formType) {
+            document.getElementById('login-form').classList.toggle('hidden', formType !== 'login');
+            document.getElementById('signup-form').classList.toggle('hidden', formType !== 'signup');
+            document.getElementById('message').classList.add('hidden');
+        }
+
+        async function submitForm(formType, formData) {
+            let url = formType === 'login' ? '/api/login/' : '/api/user/';
+            let method = formType === 'login' ? 'POST' : 'POST';
+
+            let response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const messageElement = document.getElementById('message');
+            if (response.ok) {
+                const data = await response.json();
+                messageElement.classList.remove('hidden');
+                messageElement.classList.add('text-green-500');
+                messageElement.textContent = formType === 'login' ? 'Login successful' : 'Account created successfully';
+            } else {
+                const error = await response.json();
+                messageElement.classList.remove('hidden');
+                messageElement.classList.add('text-red-500');
+                messageElement.textContent = error.message || 'An error occurred';
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            submitForm('login', { email, password });
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            const full_name = document.getElementById('full_name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const phone_number = document.getElementById('phone_number').value;
+            submitForm('signup', { full_name, email, password, phone_number });
+        }
+    </script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="w-full max-w-md">
+        <div class="text-center mb-6">
+            <button class="px-4 py-2 bg-blue-500 text-white rounded" onclick="toggleForm('login')">Login</button>
+            <button class="px-4 py-2 bg-green-500 text-white rounded" onclick="toggleForm('signup')">Sign Up</button>
+        </div>
+
+        <div id="message" class="hidden text-center mb-6"></div>
+
+        <div id="login-form" class="bg-white p-6 rounded shadow-md">
+            <h2 class="text-center text-2xl font-bold">Sign in to your account</h2>
+            <form class="mt-4" onsubmit="handleLogin(event)">
+                <label class="block mb-2">Email</label>
+                <input id="login-email" type="email" required class="w-full p-2 border rounded">
+
+                <label class="block mt-3 mb-2">Password</label>
+                <input id="login-password" type="password" required class="w-full p-2 border rounded">
+
+                <button type="submit" class="mt-4 w-full bg-blue-500 text-white py-2 rounded">Sign in</button>
+            </form>
+        </div>
+
+        <div id="signup-form" class="hidden bg-white p-6 rounded shadow-md">
+            <h2 class="text-center text-2xl font-bold">Create a new account</h2>
+            <form class="mt-4" onsubmit="handleSignup(event)">
+                <label class="block mb-2">Full Name</label>
+                <input id="signup-full_name" type="text" required class="w-full p-2 border rounded">
+
+                <label class="block mt-3 mb-2">Email</label>
+                <input id="signup-email" type="email" required class="w-full p-2 border rounded">
+
+                <label class="block mt-3 mb-2">Password</label>
+                <input id="signup-password" type="password" required class="w-full p-2 border rounded">
+
+                <label class="block mt-3 mb-2">Phone Number</label>
+                <input id="signup-phone" type="text" required class="w-full p-2 border rounded">
+
+                <button type="submit" class="mt-4 w-full bg-green-500 text-white py-2 rounded">Create Account</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
