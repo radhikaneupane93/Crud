@@ -5,27 +5,100 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Blogs</title>
     <script>
-        // Function to fetch and display all blogs
+        async function likeBlog(id) {
+            try {
+                const token = localStorage.getItem("token");  // Get stored token
+                if (!token) {
+                    alert("You must be logged in to like a blog.");
+                    return;
+                }
+        
+                const response = await fetch(`http://127.0.0.1:8000/api/blog/blogs/${id}/likes/`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${token}` // ✅ Fix: Correct token format
+                    }
+                });
+        
+                if (response.ok) {
+                    alert("Blog liked successfully!");
+                    getAllBlogs();
+                } else {
+                    alert("Failed to like Blog. Ensure you're logged in.");
+                }
+            } catch (error) {
+                console.error('Error liking Blog:', error);
+            }
+        }
+        
+        async function addComment(id) {
+            const commentInput = document.getElementById(`comment-${id}`);
+            if (!commentInput) {
+                alert("Comment input not found!");
+                return;
+            }
+        
+            const commentText = commentInput.value.trim();
+            if (!commentText) {
+                alert("Please enter a comment.");
+                return;
+            }
+        
+            try {
+                const token = localStorage.getItem("token");  // Get stored token
+                if (!token) {
+                    alert("You must be logged in to comment.");
+                    return;
+                }
+        
+                const response = await fetch(`http://127.0.0.1:8000/api/blog/blogs/${id}/comments/`, {
+                    method: "POST",
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${token}` // ✅ Fix: Correct token format
+                    },
+                    body: JSON.stringify({ comment_text: commentText })
+                });
+        
+                if (response.ok) {
+                    alert("Comment added successfully!");
+                    commentInput.value = "";
+                    getAllBlogs();
+                } else {
+                    alert("Failed to add comment. Ensure you're logged in.");
+                }
+            } catch (error) {
+                console.error('Error adding comment.', error);
+            }
+        }
+    
+    
         async function getAllBlogs() {
             try {
-                // Fetch data from the backend
                 const response = await fetch('http://127.0.0.1:8000/api/blog/blogdetails/');
                 const blogs = await response.json();
 
                 if (response.ok) {
-                    // Get the container to display blogs
                     const blogList = document.getElementById('blog-list');
-                    blogList.innerHTML = '';  // Clear any previous content
+                    blogList.innerHTML = '';
 
-                    // Loop through each blog and display it
                     blogs.forEach(blog => {
                         const blogElement = document.createElement('div');
                         blogElement.classList.add('blog');
+
                         blogElement.innerHTML = `
                             <h3>${blog.blog_title}</h3>
                             <p><strong>Author:</strong> ${blog.blog_author}</p>
                             <p><strong>Published on:</strong> ${new Date(blog.published_date).toLocaleDateString()}</p>
                             <p>${blog.blog_content}</p>
+                            <button onclick="likeBlog(${blog.id})"> Like (${blog.likes_count})</button>
+                            <br><br>
+                            <div class="comments">
+                                <h4>Comments:</h4>
+                                <input type="text" id="comment-${blog.id}" placeholder="Add a comment">
+                                <button onclick="addComment(${blog.id})">Post Comment</button>
+                            </div>
                             <hr>
                         `;
                         blogList.appendChild(blogElement);
@@ -39,20 +112,13 @@
             }
         }
 
-        // Trigger the function on page load
         window.onload = getAllBlogs;
     </script>
 </head>
 <body>
     <h1>All Blogs</h1>
-
-    <!-- Container where blogs will be displayed -->
-    <div id="blog-list">
-        <!-- Blogs will be inserted here -->
-    </div>
-
+    <div id="blog-list"></div>
     <br>
-    <!-- Link to Add a new blog -->
     <a href="http://127.0.0.1:8000/api/blog/blogCreation/">Add Blog</a>
 </body>
 </html>

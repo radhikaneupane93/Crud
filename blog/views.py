@@ -25,9 +25,15 @@ class BlogAPIView(APIView):
         
     def get(self,request):
         try:
-            blogs = Blog.objects.all()  
-            serializer = BlogSerializer(blogs, many=True)  
-            return Response(serializer.data, status=status.HTTP_200_OK)  
+            blogs = Blog.objects.all() 
+            response_data = [] 
+            for blog in blogs:
+                blog_data = BlogSerializer(blog).data
+                blog_data["likes_count"] = BlogLike.objects.filter(blog=blog).count()
+                blog_data["comments"] = CommentSerializer(BlogComment.objects.filter(blog=blog), many=True).data
+                response_data.append(blog_data)
+                
+            return Response(response_data, status=status.HTTP_200_OK)  
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
@@ -56,10 +62,10 @@ class BlogAPIView(APIView):
 class BlogCommentAPIView(APIView):
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
-    
+        
     def post(self, request, id ):
         try:
-            blog = Blog.objects.get(id=id)
+            blog = get_object_or_404(Blog, id=id)
             print(blog)
             comment = BlogComment.objects.create(
                 blog=blog,
@@ -80,7 +86,7 @@ class BlogLikeAPIView(APIView):
 
     def post(self, request, id):
         try:
-            blog = Blog.objects.get(id=id)
+            blog = get_object_or_404(Blog, id=id)
             blog_like, created = BlogLike.objects.get_or_create(blog=blog)
 
             if request.user in blog_like.likes.all():
@@ -126,4 +132,7 @@ def BlogCreation(request):
 
 def BlogInfo(request):
     return render(request, "blogDetails.html")
+
+def PostUpdate(request):
+    return render(request, "postUpdate.html")
     

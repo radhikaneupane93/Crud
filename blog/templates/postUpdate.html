@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Updates</title>
+    <script>
+        async function likeBlog(blogId) {
+            try {
+                const response = await fetch(`${apiBaseUrl}/blogs/${blogId}/likes/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    alert("Blog liked successfully!");
+                    getAllBlogs(); 
+                } else {
+                    alert("Failed to like blog.");
+                }
+            } catch (error) {
+                console.error('Error liking blog:', error);
+            }
+        }
+
+   
+        async function addComment(blogId) {
+            const commentInput = document.getElementById(`comment-${blogId}`);
+            const commentText = commentInput.value;
+
+            if (!commentText) {
+                alert("Please enter a comment.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiBaseUrl}/blogs/${blogId}/comments/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ comment_text: commentText })
+                });
+
+                if (response.ok) {
+                    alert("Comment added successfully!");
+                    commentInput.value = "";
+                    getAllBlogs(); 
+                } else {
+                    alert("Failed to add comment.");
+                }
+            } catch (error) {
+                console.error('Error adding comment:', error);
+            }
+        }
+
+        window.onload = getAllBlogs;
+    </script>
+</head>
+<body>
+
+    Hello WOrld!
+</body>
+</html>

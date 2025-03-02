@@ -33,12 +33,13 @@
                 if(formType === 'login'){
                     window.location.href='http://127.0.0.1:8000/api/blog/blogInfo/';
                 } 
-              } else {
+                } 
+                else {
                 const error = await response.json();
                 messageElement.classList.remove('hidden');
                 messageElement.classList.add('text-red-500');
                 messageElement.textContent = error.message || 'An error occurred';
-            }
+              }
         } catch(error){
             const messageElement = document.getElementById('message');
             messageElement.classList.remove('hidden');
