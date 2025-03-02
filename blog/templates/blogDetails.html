@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Blogs</title>
+    <script>
+        // Function to fetch and display all blogs
+        async function getAllBlogs() {
+            try {
+                // Fetch data from the backend
+                const response = await fetch('http://127.0.0.1:8000/api/blog/blogdetails/');
+                const blogs = await response.json();
+
+                if (response.ok) {
+                    // Get the container to display blogs
+                    const blogList = document.getElementById('blog-list');
+                    blogList.innerHTML = '';  // Clear any previous content
+
+                    // Loop through each blog and display it
+                    blogs.forEach(blog => {
+                        const blogElement = document.createElement('div');
+                        blogElement.classList.add('blog');
+                        blogElement.innerHTML = `
+                            <h3>${blog.blog_title}</h3>
+                            <p><strong>Author:</strong> ${blog.blog_author}</p>
+                            <p><strong>Published on:</strong> ${new Date(blog.published_date).toLocaleDateString()}</p>
+                            <p>${blog.blog_content}</p>
+                            <hr>
+                        `;
+                        blogList.appendChild(blogElement);
+                    });
+                } else {
+                    document.getElementById('blog-list').innerText = 'No blogs found!';
+                }
+            } catch (error) {
+                console.error('Error fetching blogs:', error);
+                document.getElementById('blog-list').innerText = 'Something went wrong!';
+            }
+        }
+
+        // Trigger the function on page load
+        window.onload = getAllBlogs;
+    </script>
+</head>
+<body>
+    <h1>All Blogs</h1>
+
+    <!-- Container where blogs will be displayed -->
+    <div id="blog-list">
+        <!-- Blogs will be inserted here -->
+    </div>
+
+    <br>
+    <!-- Link to Add a new blog -->
+    <a href="http://127.0.0.1:8000/api/blog/blogCreation/">Add Blog</a>
+</body>
+</html>

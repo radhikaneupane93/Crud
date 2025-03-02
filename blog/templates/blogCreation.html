@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Creation</title>
+    <script>
+        async function submitBlog(event) {
+            event.preventDefault();
+
+            const blog_title = document.getElementById('blog_title').value;
+            const blog_content = document.getElementById('blog_content').value;
+            const published_date = document.getElementById('published_date').value; 
+            const blog_author = document.getElementById('blog_author').value;
+
+            const blogData = { blog_title, blog_content, published_date, blog_author };
+
+            const response = await fetch('http://127.0.0.1:8000/api/blog/blog/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(blogData),
+            });
+
+            if (response.ok) { 
+                const data = await response.json();
+                alert('Blog Created successfully');
+            } else {
+                alert('Something went wrong');
+            }
+        }
+    </script>
+</head>
+<body>
+   
+    <div class="bg-white py-24 sm:py-32">
+        <div class="mx-auto max-w-7xl px-6 lg:px-8">
+            <div class="mx-auto max-w-2xl lg:mx-0">
+                <h2 class="text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">Create a Blog</h2>
+                <p class="mt-2 text-lg text-gray-600">Fill out the form to create a new blog.</p>
+            </div>
+            <div class="mx-auto mt-10 max-w-2xl">
+                <form id="create-blog-form" onsubmit="submitBlog(event)">
+                  
+                    <label for="blog_title" class="block text-sm font-medium text-gray-700">Blog Title</label>
+                    <input type="text" id="blog_title" name="blog_title" required class="w-full p-3 border border-gray-300 rounded-md mt-2 mb-4">
+
+                  
+                    <label for="blog_content" class="block text-sm font-medium text-gray-700">Blog Content</label>
+                    <textarea id="blog_content" name="blog_content" rows="4" required class="w-full p-3 border border-gray-300 rounded-md mt-2 mb-4"></textarea>
+
+                    <label for="published_date" class="block text-sm font-medium text-gray-700">Published Date</label>
+                    <input type="date" id="published_date" name="published_date" required class="w-full p-3 border border-gray-300 rounded-md mt-2 mb-4">
+
+                  
+                    <label for="blog_author" class="block text-sm font-medium text-gray-700">Blog Author</label>
+                    <input type="text" id="blog_author" name="blog_author" required class="w-full p-3 border border-gray-300 rounded-md mt-2 mb-4">
+
+                    <button type="submit" class="mt-4 w-full bg-green-500 text-white py-2 rounded">Add Blog</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

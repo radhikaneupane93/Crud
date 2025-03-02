@@ -23,15 +23,11 @@ class BlogAPIView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-    def get(self,request, id=None):
+    def get(self,request):
         try:
-            if id:
-                blog = get_object_or_404(Blog, id=id)
-                serializer = BlogSerializer(blog)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            blogs = Blog.objects.all()
-            serializer = BlogSerializer(blogs, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            blogs = Blog.objects.all()  
+            serializer = BlogSerializer(blogs, many=True)  
+            return Response(serializer.data, status=status.HTTP_200_OK)  
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
@@ -123,3 +119,11 @@ class BlogLikeListAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Blog.DoesNotExist:
             return Response({"error": "Blog not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        
+def BlogCreation(request):
+    return render(request, "blogCreation.html")
+
+def BlogInfo(request):
+    return render(request, "blogDetails.html")
+    
